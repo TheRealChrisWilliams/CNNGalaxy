@@ -3,10 +3,11 @@ from keras.src.callbacks import EarlyStopping
 from matplotlib import pyplot as plt
 from keras.src.utils import image_dataset_from_directory
 from tensorflow.keras import layers, models
+from metrics_logger import MetricsLogger
 
 # Define paths
-train_dir = "images_E_S_SB_69x69_a_03/images_E_S_SB_69x69_a_03_train"
-val_dir = "images_E_S_SB_69x69_a_03/images_E_S_SB_69x69_a_03_test"
+train_dir = "C:/Users/ahaan/Downloads/Final_gz2_69x69_imgs/Final_gz2_69x69_train"
+val_dir = "C:/Users/ahaan/Downloads/Final_gz2_69x69_imgs/Final_gz2_69x69_test"
 
 # Parameters
 img_height, img_width = 69, 69
@@ -67,7 +68,7 @@ model = models.Sequential([
 model.compile(
     optimizer='adam',
     loss='sparse_categorical_crossentropy',
-    metrics=['accuracy']
+    metrics=['accuracy', tf.keras.metrics.MeanSquaredError(), tf.keras.metrics.Recall()]
 )
 
 # Print the model summary
@@ -80,12 +81,12 @@ early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weig
 history = model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=1,
-    callbacks=[early_stopping]
+    epochs=15,
+    callbacks=[early_stopping, MetricsLogger()]
 )
 
 # Save the entire model
-model.save('galaxy_classifier.h5', save_format='h5')
+model.save('galaxy_classifier.h5')
 
 # Plot training and validation accuracy
 plt.figure(figsize=(8, 6))
